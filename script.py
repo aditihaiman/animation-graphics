@@ -2,6 +2,7 @@ import mdl
 from display import *
 from matrix import *
 from draw import *
+import sys
 
 """======== first_pass( commands ) ==========
 
@@ -19,11 +20,24 @@ from draw import *
   with the name being used.
   ==================== """
 def first_pass( commands ):
-
-    name = ''
+    name = 'anim'
     num_frames = 1
-
-    return (name, num_frames)
+    f = False
+    v = False
+    b = False
+    for command in commands:
+        if command['op'] == 'basename':
+            name = command['args'][0]
+            b = True
+        if command['op'] == 'frames':
+            num_frames = command['args'][0]
+            f = True
+        if command['op'] == 'vary':
+            v = True
+    if v and not f: exit()
+    if f and not b:
+        print("Using default basename: anim")
+    return (name, int(num_frames))
 
 """======== second_pass( commands ) ==========
 
@@ -44,7 +58,17 @@ def first_pass( commands ):
   ===================="""
 def second_pass( commands, num_frames ):
     frames = [ {} for i in range(num_frames) ]
-
+    for command in commands:
+        if command['op'] == 'vary':
+            f0 = int(command['args'][0])
+            f1 = command['args'][1]
+            p0 = command['args'][2]
+            p1 = command['args'][3]
+            k = command['knob']
+            inc = (p1 - p0) / (f1 - f0)
+            while(f0 <= f1):
+                frames[f0][k] = inc * f0
+                f0+=1
     return frames
 
 
@@ -95,9 +119,12 @@ def run(filename):
     consts = ''
     coords = []
     coords1 = []
+    f = False
+    if num_frames > 1: f = True
+    if f: print("s", symbols)
 
     for command in commands:
-        print(command)
+        print("c", command)
         c = command['op']
         args = command['args']
         knob_value = 1
