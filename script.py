@@ -66,8 +66,10 @@ def second_pass( commands, num_frames ):
             p1 = command['args'][3]
             k = command['knob']
             inc = (p1 - p0) / (f1 - f0)
+            kVal = p0
             while(f0 <= f1):
-                frames[f0][k] = inc * f0
+                frames[f0][k] = kVal
+                kVal += inc
                 f0+=1
     return frames
 
@@ -108,22 +110,23 @@ def run(filename):
     frames = second_pass(commands, num_frames)
 
 
-    tmp = new_matrix()
-    ident( tmp )
-
-    stack = [ [x[:] for x in tmp] ]
-    screen = new_screen()
-    zbuffer = new_zbuffer()
-    tmp = []
-    step_3d = 100
-    consts = ''
-    coords = []
-    coords1 = []
+    
     f = False
     if num_frames > 1: f = True
-    print("s", symbols)
+    #print("s", symbols)
 
     for x in range(num_frames):
+        tmp = new_matrix()
+        ident( tmp )
+
+        stack = [ [x[:] for x in tmp] ]
+        screen = new_screen()
+        zbuffer = new_zbuffer()
+        tmp = []
+        step_3d = 100
+        consts = ''
+        coords = []
+        coords1 = []
         if f:
             for frame in frames[x]:
                 symbols[frame][1] = frames[x][frame]
@@ -212,4 +215,4 @@ def run(filename):
             elif c == 'save':
                 if not f: save_extension(screen, args[0])
             # end operation loop
-        save_extension(screen, name + str(x))
+        save_extension(screen, name + str(x) + ".png")
