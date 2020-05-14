@@ -34,7 +34,9 @@ def first_pass( commands ):
             f = True
         if command['op'] == 'vary':
             v = True
-    if v and not f: exit()
+    if v and not f:
+        print("Error: found vary but no frames")
+        exit()
     if f and not b:
         print("Using default basename: anim")
     return (name, int(num_frames))
@@ -215,4 +217,4 @@ def run(filename):
             elif c == 'save':
                 if not f: save_extension(screen, args[0])
             # end operation loop
-        save_extension(screen, name + str(x) + ".png")
+        if f: save_extension(screen, name + ("%03d"%x) + ".png")
